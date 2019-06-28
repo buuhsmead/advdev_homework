@@ -40,3 +40,4 @@ oc set env dc/tasks-green VERSION='0.0 (tsks-green)' -n ${GUID}-tasks-prod
 
 # Expose Blue service as route to make green application active
 oc expose svc/tasks-green --name tasks -n ${GUID}-tasks-prod
+

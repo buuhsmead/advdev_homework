@@ -16,3 +16,4 @@ oc patch route tasks -n ${GUID}-tasks-prod -p '{"spec":{"to":{"name":"tasks-gree
 
 # Add echo statement so that the script succeeds even if the patch didn't do anything
 echo "Updated"
+
