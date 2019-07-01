@@ -3,6 +3,7 @@ podTemplate(
   label: "skopeo-pod",
   cloud: "openshift",
   inheritFrom: "maven",
+  podRetention: always(),
   containers: [
     containerTemplate(
       name: "jnlp",
@@ -18,6 +19,10 @@ podTemplate(
     // Define Maven Command to point to the correct
     // settings for our Nexus installation
     def mvnCmd = "mvn -s ../nexus_settings.xml"
+    if (GUID == 'aaaa') {
+      mvnCmd = "mvn -s ../aaaa_nexus_settings.xml"
+    }
+
 
     // Checkout Source Code.
     stage('Checkout Source') {
