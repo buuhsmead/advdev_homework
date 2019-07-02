@@ -55,26 +55,28 @@ podTemplate(
         sh "${mvnCmd} package -DskipTests"
       }
 
+
+
       // TBD: The next two stages should run in parallel
       stage('Run Tests') {
-        parallel {
+        parallel 'Unit tests': {
           // Using Maven run the unit tests
-          stage('Unit Tests') {
             echo "Running Unit Tests"
             
             // TBD: Execute Unit Tests
             sh "${mvnCmd} tests"
-          }
+          }, 'Code Analysis': {
           
           // Using Maven to call SonarQube for Code Analysis
-          stage('Code Analysis') {
+
             echo "Running Code Analysis"
             
             // TBD: Execute Sonarqube Tests
             sh "${mvnCmd} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.exclusions=**/*.css,**/*.js -Dsonar.projectName=${JOB_BASE_NAME} -Dsonar.projectVersion=${devTag}"
-          }
+          },
+        failFast: true
         }
-      }
+      
         
       // Publish the built war file to Nexus
       stage('Publish to Nexus') {
