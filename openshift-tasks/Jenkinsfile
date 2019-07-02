@@ -51,6 +51,8 @@ podTemplate(
       // be accessible from other stages.
       // Extract version from the pom.xml
       def version = getVersionFromPom("pom.xml")
+      def pom = readMavenPom file: 'pom.xml'
+      version = pom.version
 
       // TBD Set the tag for the development image: version + build number
       def devTag  = version + "-" + BUILD_ID
