@@ -22,12 +22,16 @@ podTemplate(
     def mvnCmd = "mvn -s ../nexus_settings.xml"
     def sonarUrl = "http://sonarqube-gpte-hw-cicd.apps.na311.openshift.opentlc.com"
     def nexusDeployUrl = "http://nexus3-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/all-maven-public"
+    def nexusDockerUrl = "nexus-registry-gpte-hw-cicd.apps.na311.openshift.opentlc.com:5000"
+    def nexusAdminPw = "admin123"
 
     // Settings for Personal Cluster
     if (GUID == 'aaaa') {
       mvnCmd = "mvn -s ../aaaa_nexus_settings.xml"
       sonarUrl = "http://sonarqube-huub-sonarqube.apps.box.it-speeltuin.nl"
       nexusDeployUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-releases/"
+      nexusDockerUrl = "nexus-registry-huub-nexus.apps.box.it-speeltuin.nl:5000"
+      nexusAdminPw = "he9ihiyohg7Jae"
     }
 
 
@@ -137,7 +141,7 @@ podTemplate(
             
             openshift.set("image", "dc/tasks", "tasks=docker-registry.default.svc:5000/${devProject}/tasks:${devTag}")
 
-            openshift.set("env", "dc/tasks", "version='${devTag} (tasks-dev)'")
+            openshift.set("env", "dc/tasks", "VERSION='${devTag} (tasks-dev)'")
             
             openshift.selector("dc", "tasks").rollout().latest()
 
@@ -149,7 +153,7 @@ podTemplate(
             while (rc.spec.replicas != rc.status.readyReplicas) {
               sleep 5
               rc = openshift.selector("rc", "tasks-${dc_version}").object()
-            }
+            } 
             
           }
         }
@@ -166,8 +170,23 @@ podTemplate(
 
         // TBD: Copy image to Nexus container registry
 
+        sh "skopeo copy --src-creds openshift:\$(oc whoami -t) \
+              --dest-creds admin:${nexusAdminPw} \
+              --src-tls-verify=false \
+              --dest-tls-verify=false \
+              docker://docker-registry.default.svc:5000/${devProject}/tasks:${devTag} docker://${nexusDockerUrl}/tasks:${devTag}"
+
+
         // TBD: Tag the built image with the production tag.
+
+        openshift.withCluster() {
+          openshift.withProject("${prodProject}") {
+            openshift.tag("${devProject}/tasks:latest", "${prodProject}/tasks:${prodTag}")
+          }
+        }
       }
+
+
 
       // Blue/Green Deployment into Production
       // -------------------------------------
