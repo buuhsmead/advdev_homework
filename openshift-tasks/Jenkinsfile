@@ -20,7 +20,7 @@ podTemplate(
     // settings for our Nexus installation
     def mvnCmd = "mvn -s ../nexus_settings.xml"
     if (GUID == 'aaaa') {
-      mvnCmd = "mvn -s ../aaaa_nexus_settings.xml"
+      mvnCmd = "mvn -X -s ../aaaa_nexus_settings.xml"
     }
 
 
