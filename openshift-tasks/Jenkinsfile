@@ -219,8 +219,8 @@ podTemplate(
 
             // this will wait until the desired replicas are available
             dc.rollout().status()
-
-
+          }
+        }
       }
 
       stage('Switch over to new Version') {
