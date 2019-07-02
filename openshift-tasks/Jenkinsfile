@@ -4,6 +4,7 @@ podTemplate(
   cloud: "openshift",
   inheritFrom: "maven",
   podRetention: always(),
+  idleMinutes: 20,
   containers: [
     containerTemplate(
       name: "jnlp",
@@ -19,8 +20,10 @@ podTemplate(
     // Define Maven Command to point to the correct
     // settings for our Nexus installation
     def mvnCmd = "mvn -s ../nexus_settings.xml"
+    def sonarUrl = "http://sonarqube-user4-sonarqube.apps.2b0b.openshift.opentlc.com"
     if (GUID == 'aaaa') {
-      mvnCmd = "mvn -X -s ../aaaa_nexus_settings.xml"
+      mvnCmd = "mvn -s ../aaaa_nexus_settings.xml"
+      sonarUrl = "http://sonarqube-huub-sonarqube.apps.box.it-speeltuin.nl"
     }
 
 
@@ -53,21 +56,26 @@ podTemplate(
       }
 
       // TBD: The next two stages should run in parallel
-
-      // Using Maven run the unit tests
-      stage('Unit Tests') {
-        echo "Running Unit Tests"
-
-        // TBD: Execute Unit Tests
+      stage('Run Tests') {
+        parallel {
+          // Using Maven run the unit tests
+          stage('Unit Tests') {
+            echo "Running Unit Tests"
+            
+            // TBD: Execute Unit Tests
+            sh "${mvnCmd} tests"
+          }
+          
+          // Using Maven to call SonarQube for Code Analysis
+          stage('Code Analysis') {
+            echo "Running Code Analysis"
+            
+            // TBD: Execute Sonarqube Tests
+            sh "${mvnCmd} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.exclusions=**/*.css,**/*.js -Dsonar.projectName=${JOB_BASE_NAME} -Dsonar.projectVersion=${devTag}"
+          }
+        }
       }
-
-      // Using Maven to call SonarQube for Code Analysis
-      stage('Code Analysis') {
-        echo "Running Code Analysis"
-
-        // TBD: Execute Sonarqube Tests
-      }
-
+        
       // Publish the built war file to Nexus
       stage('Publish to Nexus') {
         echo "Publish to Nexus"
