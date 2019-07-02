@@ -30,7 +30,7 @@ podTemplate(
       mvnCmd = "mvn -s ../aaaa_nexus_settings.xml"
       sonarUrl = "http://sonarqube-huub-sonarqube.apps.box.it-speeltuin.nl"
       nexusDeployUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-releases/"
-      nexusDockerUrl = "nexus-registry-huub-nexus.apps.box.it-speeltuin.nl:5000"
+      nexusDockerUrl = "nexus-registry.huub-nexus.svc:5000"
       nexusAdminPw = "he9ihiyohg7Jae"
     }
 
