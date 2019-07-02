@@ -72,7 +72,7 @@ podTemplate(
             echo "Running Code Analysis"
             
             // TBD: Execute Sonarqube Tests
-            sh "${mvnCmd} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.exclusions=**/*.css,**/*.js -Dsonar.projectName=${JOB_BASE_NAME} -Dsonar.projectVersion=${devTag}"
+            sh "${mvnCmd} sonar:sonar -Dsonar.host.url=${sonarUrl} -Dsonar.exclusions=**/*.css,**/*.js -Dsonar.projectName=${JOB_BASE_NAME} -Dsonar.projectVersion=${devTag}"
           },
         failFast: true
         }
