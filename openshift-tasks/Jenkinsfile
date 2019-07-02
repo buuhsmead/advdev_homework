@@ -217,6 +217,9 @@ podTemplate(
 
             openshift.set("env", "dc/${destApp}", "VERSION='${prodTag} (${destApp})'")
 
+
+            openshift.selector("dc", "${destApp}").rollout().latest()
+
             // this will wait until the desired replicas are available
             def dc_version = dc.status.latestVersion
             def rc = openshift.selector("rc", "tasks-${dc_version}").object()
