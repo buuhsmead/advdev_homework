@@ -21,11 +21,11 @@ podTemplate(
     // settings for our Nexus installation
     def mvnCmd = "mvn -s ../nexus_settings.xml"
     def sonarUrl = "http://sonarqube-user4-sonarqube.apps.2b0b.openshift.opentlc.com"
-    def nexusUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-all-public/"
+    def nexusDeployUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-all-public/"
     if (GUID == 'aaaa') {
       mvnCmd = "mvn -s ../aaaa_nexus_settings.xml"
       sonarUrl = "http://sonarqube-huub-sonarqube.apps.box.it-speeltuin.nl"
-      nexusUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-all-public/"
+      nexusDeployUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-releases/"
     }
 
 
@@ -45,7 +45,22 @@ podTemplate(
       // TBD Set the tag for the development image: version + build number
       def devTag  = version + "-" + BUILD_ID
       // Set the tag for the production image: version
-      def prodTag = ""
+      def prodTag = devTag
+
+      // Because we are using a release repository on Nexus
+      // We are only one(1) upload allowed for each artifact
+      // So I set the version used via a mvn plugin
+      sh "${mvnCmd} versions:set -DnewVersion=${devTag}"
+
+      // THIS SHOULD NEVER BE DONE
+//      sh "git add pom.xml"
+//      sh "git commit -m 'Auto update version'"
+//      withCredentials([usernamePassword(credentialsId: 'gogs-checkout', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')
+//      ]) {
+//        sh("git tag -a v${devTag} -m 'my version ${devTag}'")
+//        sh('git push http://${GIT_USERNAME}:${GIT_PASSWORD}@gogs.user4-gogs.svc:3000/CICDLabs/openshift-tasks-private.git --tags')
+//      }
+
 
       // Using Maven build the war file
       // Do not run tests in this step
@@ -85,7 +100,7 @@ podTemplate(
         echo "Publish to Nexus"
 
         // TBD: Publish to Nexus
-        sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::${nexusUrl}"
+        sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::${nexusDeployUrl}"
       }
 
       // Build the OpenShift Image in OpenShift and tag it.
