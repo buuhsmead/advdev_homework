@@ -21,9 +21,11 @@ podTemplate(
     // settings for our Nexus installation
     def mvnCmd = "mvn -s ../nexus_settings.xml"
     def sonarUrl = "http://sonarqube-user4-sonarqube.apps.2b0b.openshift.opentlc.com"
+    def nexusUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-all-public/"
     if (GUID == 'aaaa') {
       mvnCmd = "mvn -s ../aaaa_nexus_settings.xml"
       sonarUrl = "http://sonarqube-huub-sonarqube.apps.box.it-speeltuin.nl"
+      nexusUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-all-public/"
     }
 
 
@@ -83,6 +85,7 @@ podTemplate(
         echo "Publish to Nexus"
 
         // TBD: Publish to Nexus
+        sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::${nexusUrl}"
       }
 
       // Build the OpenShift Image in OpenShift and tag it.
