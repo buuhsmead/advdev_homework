@@ -20,14 +20,20 @@ podTemplate(
     // Define Maven Command to point to the correct
     // settings for our Nexus installation
     def mvnCmd = "mvn -s ../nexus_settings.xml"
-    def sonarUrl = "http://sonarqube-user4-sonarqube.apps.2b0b.openshift.opentlc.com"
-    def nexusDeployUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-all-public/"
+    def sonarUrl = "http://sonarqube-gpte-hw-cicd.apps.na311.openshift.opentlc.com"
+    def nexusDeployUrl = "http://nexus3-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/all-maven-public"
+
+    // Settings for Personal Cluster
     if (GUID == 'aaaa') {
       mvnCmd = "mvn -s ../aaaa_nexus_settings.xml"
       sonarUrl = "http://sonarqube-huub-sonarqube.apps.box.it-speeltuin.nl"
       nexusDeployUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-releases/"
     }
 
+
+    // Set Development and Production Project Names
+    def devProject  = "${GUID}-tasks-dev"
+    def prodProject = "${GUID}-tasks-prod"
 
     // Checkout Source Code.
     stage('Checkout Source') {
@@ -108,8 +114,17 @@ podTemplate(
         echo "Building OpenShift container image tasks:${devTag}"
 
         // TBD: Build Image, tag Image
+        openshift.withCluster() {
+          openshift.withProject("${devProject}") {
+            openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
+            
+            // TBD: Tag the image using the devTag.
+            openshift.tag("tasks:latest", "tasks:${devTag}")
+            
+          }
+        }
       }
-
+      
       // Deploy the built image to the Development Environment.
       stage('Deploy to Dev') {
         echo "Deploying container image to Development Project"
