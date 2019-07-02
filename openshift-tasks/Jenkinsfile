@@ -26,7 +26,7 @@ podTemplate(
     def nexusAdminPw = "admin123"
 
     // Settings for Personal Cluster
-    if (GUID == 'aaaa') {
+    if (GUID == 'bbbb') {
       mvnCmd = "mvn -s ../aaaa_nexus_settings.xml"
       sonarUrl = "http://sonarqube-huub-sonarqube.apps.box.it-speeltuin.nl"
       nexusDeployUrl = "http://nexus3-huub-nexus.apps.box.it-speeltuin.nl/repository/maven-releases/"
