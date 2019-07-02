@@ -55,7 +55,7 @@ podTemplate(
       // TBD Set the tag for the development image: version + build number
       def devTag  = version + "-" + BUILD_ID
       // Set the tag for the production image: version
-      def prodTag = devTag
+      def prodTag = version
 
       // Because we are using a release repository on Nexus
       // We are only one(1) upload allowed for each artifact
@@ -170,7 +170,7 @@ podTemplate(
 
         // TBD: Copy image to Nexus container registry
 
-        sh "skopeo --debug copy  --src-creds openshift:\$(oc whoami -t) \
+        sh "skopeo copy  --src-creds openshift:\$(oc whoami -t) \
               --dest-creds admin:${nexusAdminPw} \
               --src-tls-verify=false \
               --dest-tls-verify=false \
@@ -181,7 +181,7 @@ podTemplate(
 
         openshift.withCluster() {
           openshift.withProject("${prodProject}") {
-            openshift.tag("${devProject}/tasks:latest", "${prodProject}/tasks:${prodTag}")
+            openshift.tag("${devProject}/tasks:${devTag}", "${prodProject}/tasks:${prodTag}")
           }
         }
       }
@@ -218,7 +218,14 @@ podTemplate(
             openshift.set("env", "dc/${destApp}", "VERSION='${prodTag} (${destApp})'")
 
             // this will wait until the desired replicas are available
-            dc.rollout().status()
+            def dc_version = dc.status.latestVersion
+            def rc = openshift.selector("rc", "tasks-${dc_version}").object()
+
+            echo "Waiting for ReplicationController tasks-${dc_version} to be ready"
+            while (rc.spec.replicas != rc.status.readyReplicas) {
+              sleep 5
+              rc = openshift.selector("rc", "tasks-${dc_version}").object()
+            } 
           }
         }
       }
