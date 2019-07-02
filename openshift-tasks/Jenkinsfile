@@ -170,7 +170,7 @@ podTemplate(
 
         // TBD: Copy image to Nexus container registry
 
-        sh "skopeo copy --debug  --src-creds openshift:\$(oc whoami -t) \
+        sh "skopeo --debug copy  --src-creds openshift:\$(oc whoami -t) \
               --dest-creds admin:${nexusAdminPw} \
               --src-tls-verify=false \
               --dest-tls-verify=false \
