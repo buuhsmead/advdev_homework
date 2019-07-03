@@ -21,7 +21,7 @@ podTemplate(
     def sonarUrl = "http://sonarqube-gpte-hw-cicd.apps.na311.openshift.opentlc.com"
     def nexusDeployUrl = "http://nexus3-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/maven-releases/"
     def nexusDockerUrl = "nexus-registry-gpte-hw-cicd.apps.na311.openshift.opentlc.com"
-    def nexusAdminPw = "admin123"
+    def nexusAdminPw = "redhat"
 
     // Settings for Personal Cluster
     if (GUID == 'bbbb') {
