@@ -41,5 +41,5 @@ oc set resources dc/tasks-green --limits=memory=1536Mi,cpu=1000m --requests=memo
 oc set env dc/tasks-green VERSION='0.0 (tsks-green)' -n ${GUID}-tasks-prod
 
 # Expose Blue service as route to make green application active
-oc expose svc/tasks-green --name tasks -n ${GUID}-tasks-prod
+oc expose svc/tasks-blue --name tasks -n ${GUID}-tasks-prod
 
