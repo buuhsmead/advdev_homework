@@ -205,9 +205,7 @@ podTemplate(
             // Assumption there are only two
             if (activeApp == "tasks-green") {
               destApp = "tasks-blue"
-            } else {
-              destApp = "tasks-green"
-            }
+            } 
             echo "Active Application:      " + activeApp
             echo "Destination Application: " + destApp
 
