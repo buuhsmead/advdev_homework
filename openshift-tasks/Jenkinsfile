@@ -19,8 +19,8 @@ podTemplate(
     // settings for our Nexus installation
     def mvnCmd = "mvn -s ../nexus_settings.xml"
     def sonarUrl = "http://sonarqube-gpte-hw-cicd.apps.na311.openshift.opentlc.com"
-    def nexusDeployUrl = "http://nexus3-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/all-maven-public"
-    def nexusDockerUrl = "nexus-registry-gpte-hw-cicd.apps.na311.openshift.opentlc.com:5000"
+    def nexusDeployUrl = "http://nexus3.gpte-hw-cicd.svc.cluster.local:8081/repository/all-maven-public/"
+    def nexusDockerUrl = "nexus-registry.gpte-hw-cicd.svc.cluster.local:5000"
     def nexusAdminPw = "admin123"
 
     // Settings for Personal Cluster
